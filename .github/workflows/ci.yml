@@ -1,0 +1,171 @@
+name: CI
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - "v*"
+  pull_request:
+
+jobs:
+  jvm-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          submodules: true
+      - uses: coursier/cache-action@v6.3
+      - uses: coursier/setup-action@v1
+        with:
+          jvm: 8
+      - run: |
+          ./mill -i "integration.jvm.test"
+        if: runner.os != 'Windows'
+      - run: |
+          @call ./mill.bat -i "integration.jvm.test"
+        shell: cmd
+        if: runner.os == 'Windows'
+
+  native-tests:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          submodules: true
+      - uses: coursier/cache-action@v6.3
+      - uses: coursier/setup-action@v1
+        with:
+          jvm: 8
+      - run: |
+          ./mill -i "cli.base-image.writeNativeImageScript" generate.sh "" && \
+          ./generate.sh && \
+          ./mill -i "cli.base-image.copyToArtifacts" artifacts/
+        if: runner.os != 'Windows'
+      - run: |
+          @call ./mill.bat -i "cli.base-image.writeNativeImageScript" generate.bat ""
+          @call generate.bat
+          @call ./mill.bat -i "cli.base-image.copyToArtifacts" artifacts/
+        shell: cmd
+        if: runner.os == 'Windows'
+      - uses: actions/upload-artifact@v2.2.4
+        with:
+          name: launchers
+          path: artifacts/
+          if-no-files-found: error
+          retention-days: 1
+      - run: ./mill -i "integration.native.test"
+        if: github.event_name == 'push'
+
+  native-static-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          submodules: true
+      - uses: coursier/cache-action@v6.3
+      - uses: coursier/setup-action@v1
+        with:
+          jvm: 8
+      - run: |
+          ./mill -i "cli.static-image.writeNativeImageScript" generate.sh "" && \
+          ./generate.sh && \
+          ./mill -i "cli.static-image.copyToArtifacts" artifacts/
+      - uses: actions/upload-artifact@v2.2.4
+        with:
+          name: launchers
+          path: artifacts/
+          if-no-files-found: error
+          retention-days: 1
+      - run: ./mill -i "integration.static.test"
+        if: github.event_name == 'push'
+
+  native-mostly-static-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          submodules: true
+      - uses: coursier/cache-action@v6.3
+      - uses: coursier/setup-action@v1
+        with:
+          jvm: 8
+      - run: |
+          ./mill -i "cli.mostly-static-image.writeNativeImageScript" generate.sh "" && \
+          ./generate.sh && \
+          ./mill -i "cli.mostly-static-image.copyToArtifacts" artifacts/
+      - uses: actions/upload-artifact@v2.2.4
+        with:
+          name: launchers
+          path: artifacts/
+          if-no-files-found: error
+          retention-days: 1
+      - run: ./mill -i "integration.mostly-static.test"
+        if: github.event_name == 'push'
+
+  upload-launchers:
+    needs: [format, jvm-tests, native-tests, native-static-tests, native-mostly-static-tests]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          submodules: true
+      - uses: coursier/cache-action@v6.3
+      - uses: coursier/setup-action@v1
+        with:
+          jvm: 8
+      - uses: actions/download-artifact@v2
+        with:
+          name: launchers
+          path: artifacts/
+      - run: ./mill -i ci.upload artifacts/
+        if: github.event_name == 'push'
+        env:
+          UPLOAD_GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  format:
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+        submodules: true
+    - uses: coursier/cache-action@v6.3
+    - uses: VirtusLab/scala-cli-setup@267af2f1ed4911180b4bb25619ca4a586753cbd1
+      with:
+        jvm: "temurin:17"
+        apps: scalafmt:3.0.0
+    - run: scalafmt --check
+
+  publish:
+    needs: [upload-launchers]
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+        submodules: true
+        ssh-key: ${{ secrets.SSH_PRIVATE_KEY_SCALA_CLI }}
+    - uses: coursier/cache-action@v6.3
+    - uses: VirtusLab/scala-cli-setup@267af2f1ed4911180b4bb25619ca4a586753cbd1
+      with:
+        jvm: "temurin:17"
+    - name: GPG setup
+      run: .github/scripts/gpg-setup.sh
+      env:
+        PGP_SECRET: ${{ secrets.PGP_SECRET }}
+    - run: ./mill -i publishSonatype __.publishArtifacts
+      env:
+        PGP_PASSWORD: ${{ secrets.PGP_PASSPHRASE }}
+        SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+        SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
