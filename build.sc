@@ -60,6 +60,16 @@ object shared extends ScalaModule with ScalaCliSigningPublish {
   )
 }
 
+object `cli-options` extends ScalaModule with ScalaCliSigningPublish {
+  def scalaVersion = Scala.scala213
+  def ivyDeps = super.ivyDeps() ++ Seq(
+    Deps.caseApp
+  )
+  def moduleDeps = Seq(
+    shared
+  )
+}
+
 trait CliNativeImage extends NativeImage {
   def nativeImagePersist      = System.getenv("CI") != null
   def nativeImageGraalVmJvmId = Deps.graalVmId
@@ -94,7 +104,7 @@ object cli extends ScalaModule with ScalaCliSigningPublish { self =>
     Deps.svm
   )
   def moduleDeps = Seq(
-    shared
+    `cli-options`
   )
 
   def mainClass = Some("scala.cli.signing.ScalaCliSigning")
