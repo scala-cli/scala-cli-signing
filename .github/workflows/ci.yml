@@ -53,7 +53,7 @@ jobs:
           @call ./mill.bat -i "cli.base-image.copyToArtifacts" artifacts/
         shell: cmd
         if: runner.os == 'Windows'
-      - uses: actions/upload-artifact@v2.2.4
+      - uses: actions/upload-artifact@v3
         with:
           name: launchers
           path: artifacts/
@@ -77,7 +77,7 @@ jobs:
           ./mill -i "cli.static-image.writeNativeImageScript" generate.sh "" && \
           ./generate.sh && \
           ./mill -i "cli.static-image.copyToArtifacts" artifacts/
-      - uses: actions/upload-artifact@v2.2.4
+      - uses: actions/upload-artifact@v3
         with:
           name: launchers
           path: artifacts/
@@ -101,7 +101,7 @@ jobs:
           ./mill -i "cli.mostly-static-image.writeNativeImageScript" generate.sh "" && \
           ./generate.sh && \
           ./mill -i "cli.mostly-static-image.copyToArtifacts" artifacts/
-      - uses: actions/upload-artifact@v2.2.4
+      - uses: actions/upload-artifact@v3
         with:
           name: launchers
           path: artifacts/
