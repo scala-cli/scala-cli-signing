@@ -76,9 +76,9 @@ trait CliNativeImage extends NativeImage {
   def nativeImagePersist      = System.getenv("CI") != null
   def nativeImageGraalVmJvmId = Deps.graalVmId
   def nativeImageName         = "scala-cli-signing"
-  def nativeImageClassPath    = cli.runClasspath()
+  def nativeImageClassPath    = `native-cli`.runClasspath()
   def nativeImageMainClass = T {
-    cli.mainClass().getOrElse(sys.error("no main class found"))
+    `native-cli`.mainClass().getOrElse(sys.error("no main class found"))
   }
   def nativeImageOptions = super.nativeImageOptions() ++ Seq(
     "--no-fallback",
@@ -102,14 +102,23 @@ object cli extends ScalaModule with ScalaCliSigningPublish { self =>
   def ivyDeps = super.ivyDeps() ++ Seq(
     Deps.bouncycastle,
     Deps.caseApp,
-    Deps.coursierPublish, // we can probably get rid of that one
-    Deps.svm
+    Deps.coursierPublish // we can probably get rid of that one
   )
   def moduleDeps = Seq(
     `cli-options`
   )
-
   def mainClass = Some("scala.cli.signing.ScalaCliSigning")
+}
+object `native-cli` extends ScalaModule with ScalaCliSigningPublish { self =>
+  def scalaVersion = Scala.scala213
+  def ivyDeps = super.ivyDeps() ++ Seq(
+    Deps.svm
+  )
+  def moduleDeps = Seq(
+    cli
+  )
+
+  def mainClass = cli.mainClass()
 
   object `base-image` extends CliNativeImage
   object `static-image` extends CliNativeImage {
@@ -219,19 +228,19 @@ object integration extends Module {
   }
 
   object native extends CliTests {
-    def testLauncher = cli.`base-image`.nativeImage()
+    def testLauncher = `native-cli`.`base-image`.nativeImage()
     def cliKind      = "native"
 
     object test extends Tests
   }
   object static extends CliTests {
-    def testLauncher = cli.`static-image`.nativeImage()
+    def testLauncher = `native-cli`.`static-image`.nativeImage()
     def cliKind      = "native-static"
 
     object test extends Tests
   }
   object `mostly-static` extends CliTests {
-    def testLauncher = cli.`mostly-static-image`.nativeImage()
+    def testLauncher = `native-cli`.`mostly-static-image`.nativeImage()
     def cliKind      = "native-mostly-static"
 
     object test extends Tests
