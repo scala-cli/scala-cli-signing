@@ -43,14 +43,14 @@ jobs:
         with:
           jvm: 8
       - run: |
-          ./mill -i "cli.base-image.writeNativeImageScript" generate.sh "" && \
+          ./mill -i "native-cli.base-image.writeNativeImageScript" generate.sh "" && \
           ./generate.sh && \
-          ./mill -i "cli.base-image.copyToArtifacts" artifacts/
+          ./mill -i "native-cli.base-image.copyToArtifacts" artifacts/
         if: runner.os != 'Windows'
       - run: |
-          @call ./mill.bat -i "cli.base-image.writeNativeImageScript" generate.bat ""
+          @call ./mill.bat -i "native-cli.base-image.writeNativeImageScript" generate.bat ""
           @call generate.bat
-          @call ./mill.bat -i "cli.base-image.copyToArtifacts" artifacts/
+          @call ./mill.bat -i "native-cli.base-image.copyToArtifacts" artifacts/
         shell: cmd
         if: runner.os == 'Windows'
       - uses: actions/upload-artifact@v3
@@ -74,9 +74,9 @@ jobs:
         with:
           jvm: 8
       - run: |
-          ./mill -i "cli.static-image.writeNativeImageScript" generate.sh "" && \
+          ./mill -i "native-cli.static-image.writeNativeImageScript" generate.sh "" && \
           ./generate.sh && \
-          ./mill -i "cli.static-image.copyToArtifacts" artifacts/
+          ./mill -i "native-cli.static-image.copyToArtifacts" artifacts/
       - uses: actions/upload-artifact@v3
         with:
           name: launchers
@@ -98,9 +98,9 @@ jobs:
         with:
           jvm: 8
       - run: |
-          ./mill -i "cli.mostly-static-image.writeNativeImageScript" generate.sh "" && \
+          ./mill -i "native-cli.mostly-static-image.writeNativeImageScript" generate.sh "" && \
           ./generate.sh && \
-          ./mill -i "cli.mostly-static-image.copyToArtifacts" artifacts/
+          ./mill -i "native-cli.mostly-static-image.copyToArtifacts" artifacts/
       - uses: actions/upload-artifact@v3
         with:
           name: launchers
