@@ -55,8 +55,10 @@ object shared extends ScalaModule with ScalaCliSigningPublish {
   def scalaVersion = Scala.scala213
   def ivyDeps = super.ivyDeps() ++ Seq(
     Deps.jsoniterCore,
-    Deps.jsoniterMacros,
     Deps.osLib
+  )
+  def compileIvyDeps = super.ivyDeps() ++ Seq(
+    Deps.jsoniterMacros
   )
 }
 
