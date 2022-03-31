@@ -34,7 +34,7 @@ object Scala {
   def scala213 = "2.13.8"
 }
 
-def ghOrg  = "alexarchambault"
+def ghOrg  = "scala-cli"
 def ghName = "scala-cli-signing"
 trait ScalaCliSigningPublish extends PublishModule {
   import mill.scalalib.publish._
