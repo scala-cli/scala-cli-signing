@@ -147,7 +147,7 @@ jobs:
     - run: scalafmt --check
 
   publish:
-    needs: [upload-launchers]
+    needs: [format, jvm-tests, native-tests, native-static-tests, native-mostly-static-tests]
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
