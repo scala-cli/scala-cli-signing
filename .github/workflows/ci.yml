@@ -113,6 +113,7 @@ jobs:
   upload-launchers:
     needs: [format, jvm-tests, native-tests, native-static-tests, native-mostly-static-tests]
     runs-on: ubuntu-latest
+    if: github.event_name == 'push'
     steps:
       - uses: actions/checkout@v3
         with:
@@ -127,7 +128,6 @@ jobs:
           name: launchers
           path: artifacts/
       - run: ./mill -i ci.upload artifacts/
-        if: github.event_name == 'push'
         env:
           UPLOAD_GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -147,7 +147,7 @@ jobs:
     - run: scalafmt --check
 
   publish:
-    needs: [upload-launchers]
+    needs: [format, jvm-tests, native-tests, native-static-tests, native-mostly-static-tests]
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
