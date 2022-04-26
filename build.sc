@@ -278,4 +278,23 @@ object ci extends Module {
       log = T.ctx().log
     )
   }
+
+  def copyJvm(jvm: String = Deps.graalVmId, dest: String = "jvm") = T.command {
+    import sys.process._
+    val command = os.proc(
+      "cs",
+      "java-home",
+      "--jvm",
+      jvm,
+      "--update",
+      "--ttl",
+      "0"
+    )
+    val baseJavaHome = os.Path(command.call().out.text().trim, os.pwd)
+    System.err.println(s"Initial Java home $baseJavaHome")
+    val destJavaHome = os.Path(dest, os.pwd)
+    os.copy(baseJavaHome, destJavaHome, createFolders = true)
+    System.err.println(s"New Java home $destJavaHome")
+    destJavaHome
+  }
 }
