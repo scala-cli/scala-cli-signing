@@ -18,7 +18,7 @@ jobs:
       - uses: coursier/cache-action@v6.3
       - uses: coursier/setup-action@v1.2.0-M3
         with:
-          jvm: 8
+          jvm: "temurin:17"
       - run: |
           ./mill -i "integration.jvm.test"
         if: runner.os != 'Windows'
@@ -41,7 +41,7 @@ jobs:
       - uses: coursier/cache-action@v6.3
       - uses: coursier/setup-action@v1.2.0-M3
         with:
-          jvm: 8
+          jvm: "temurin:17"
       - run: |
           ./mill -i "native-cli.base-image.writeNativeImageScript" generate.sh "" && \
           ./generate.sh && \
@@ -72,7 +72,7 @@ jobs:
       - uses: coursier/cache-action@v6.3
       - uses: coursier/setup-action@v1.2.0-M3
         with:
-          jvm: 8
+          jvm: "temurin:17"
       - run: |
           ./mill -i "native-cli.static-image.writeNativeImageScript" generate.sh "" && \
           ./generate.sh && \
@@ -96,7 +96,7 @@ jobs:
       - uses: coursier/cache-action@v6.3
       - uses: coursier/setup-action@v1.2.0-M3
         with:
-          jvm: 8
+          jvm: "temurin:17"
       - run: |
           ./mill -i "native-cli.mostly-static-image.writeNativeImageScript" generate.sh "" && \
           ./generate.sh && \
@@ -122,7 +122,7 @@ jobs:
       - uses: coursier/cache-action@v6.3
       - uses: coursier/setup-action@v1.2.0-M3
         with:
-          jvm: 8
+          jvm: "temurin:17"
       - uses: actions/download-artifact@v3
         with:
           name: launchers
