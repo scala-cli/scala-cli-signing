@@ -11,7 +11,7 @@ import java.io.File
 
 object Deps {
   object Versions {
-    def jsoniterScala = "2.13.7"
+    def jsoniterScala = "2.13.33"
   }
   def bouncycastle    = ivy"org.bouncycastle:bcpg-jdk15on:1.68"
   def caseApp         = ivy"com.github.alexarchambault::case-app:2.1.0-M13"
