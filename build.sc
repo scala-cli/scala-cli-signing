@@ -11,9 +11,9 @@ import java.io.File
 
 object Deps {
   object Versions {
-    def jsoniterScala = "2.13.7"
+    def jsoniterScala = "2.13.33"
   }
-  def bouncycastle    = ivy"org.bouncycastle:bcpg-jdk15on:1.68"
+  def bouncycastle    = ivy"org.bouncycastle:bcpg-jdk15on:1.70"
   def caseApp         = ivy"com.github.alexarchambault::case-app:2.1.0-M14"
   def coursierPublish = ivy"io.get-coursier.publish::publish:0.1.2"
   def expecty         = ivy"com.eed3si9n.expecty::expecty:0.15.4"
@@ -25,7 +25,7 @@ object Deps {
   def osLib = ivy"com.lihaoyi::os-lib:0.8.1"
   def svm   = ivy"org.graalvm.nativeimage:svm:$graalVmVersion"
 
-  def graalVmVersion  = "22.0.0"
+  def graalVmVersion  = "22.0.0.2"
   def graalVmId       = s"graalvm-java17:$graalVmVersion"
   def csDockerVersion = "2.1.0-M5-18-gfebf9838c"
 }
