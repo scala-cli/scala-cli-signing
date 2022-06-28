@@ -25,7 +25,7 @@ object Deps {
   def osLib = ivy"com.lihaoyi::os-lib:0.8.1"
   def svm   = ivy"org.graalvm.nativeimage:svm:$graalVmVersion"
 
-  def graalVmVersion  = "22.0.0"
+  def graalVmVersion  = "22.0.0.2"
   def graalVmId       = s"graalvm-java17:$graalVmVersion"
   def csDockerVersion = "2.1.0-M5-18-gfebf9838c"
 }
