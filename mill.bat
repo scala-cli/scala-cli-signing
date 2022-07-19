@@ -112,4 +112,9 @@ if defined STRIP_VERSION_PARAMS (
     )
 )
 
+REM temporary, until we pass JPMS options to native-image,
+REM see https://www.graalvm.org/release-notes/22_2/#native-image
+REM or VirtusLab/scala-cli#1208
+set USE_NATIVE_IMAGE_JAVA_PLATFORM_MODULE_SYSTEM=false
+
 "%MILL%" %MILL_PARAMS%
