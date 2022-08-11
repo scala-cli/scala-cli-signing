@@ -43,11 +43,14 @@ jobs:
         with:
           jvm: "temurin:17"
       - run: |
+          cs java --update --ttl 0 -version && \
           ./mill -i "native-cli.base-image.writeNativeImageScript" generate.sh "" && \
           ./generate.sh && \
           ./mill -i "native-cli.base-image.copyToArtifacts" artifacts/
         if: runner.os != 'Windows'
-      - run: .github/scripts/generate-native-image-windows.sh
+      - run: |
+          export USE_NATIVE_IMAGE_JAVA_PLATFORM_MODULE_SYSTEM=false
+          .github/scripts/generate-native-image-windows.sh
         shell: bash
         if: runner.os == 'Windows'
       - uses: actions/upload-artifact@v3
@@ -71,6 +74,7 @@ jobs:
         with:
           jvm: "temurin:17"
       - run: |
+          cs java --update --ttl 0 -version && \
           ./mill -i "native-cli.static-image.writeNativeImageScript" generate.sh "" && \
           ./generate.sh && \
           ./mill -i "native-cli.static-image.copyToArtifacts" artifacts/
@@ -95,6 +99,7 @@ jobs:
         with:
           jvm: "temurin:17"
       - run: |
+          cs java --update --ttl 0 -version && \
           ./mill -i "native-cli.mostly-static-image.writeNativeImageScript" generate.sh "" && \
           ./generate.sh && \
           ./mill -i "native-cli.mostly-static-image.copyToArtifacts" artifacts/
