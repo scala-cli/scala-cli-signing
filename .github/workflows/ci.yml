@@ -43,6 +43,7 @@ jobs:
         with:
           jvm: "temurin:17"
       - run: |
+          cs java --update --ttl 0 -version && \
           ./mill -i "native-cli.base-image.writeNativeImageScript" generate.sh "" && \
           ./generate.sh && \
           ./mill -i "native-cli.base-image.copyToArtifacts" artifacts/
@@ -73,6 +74,7 @@ jobs:
         with:
           jvm: "temurin:17"
       - run: |
+          cs java --update --ttl 0 -version && \
           ./mill -i "native-cli.static-image.writeNativeImageScript" generate.sh "" && \
           ./generate.sh && \
           ./mill -i "native-cli.static-image.copyToArtifacts" artifacts/
@@ -97,6 +99,7 @@ jobs:
         with:
           jvm: "temurin:17"
       - run: |
+          cs java --update --ttl 0 -version && \
           ./mill -i "native-cli.mostly-static-image.writeNativeImageScript" generate.sh "" && \
           ./generate.sh && \
           ./mill -i "native-cli.mostly-static-image.copyToArtifacts" artifacts/
