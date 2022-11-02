@@ -13,7 +13,7 @@ object Deps {
   object Versions {
     def jsoniterScala = "2.17.6"
   }
-  def bouncycastle    = ivy"org.bouncycastle:bcpg-jdk18on:1.72"
+  def bouncycastle    = ivy"org.bouncycastle:bcpg-jdk18on:1.72.1"
   def caseApp         = ivy"com.github.alexarchambault::case-app:2.1.0-M18"
   def coursierPublish = ivy"io.get-coursier.publish::publish:0.1.3"
   def expecty         = ivy"com.eed3si9n.expecty::expecty:0.16.0"
