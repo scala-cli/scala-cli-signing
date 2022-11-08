@@ -15,7 +15,7 @@ object Deps {
   }
   def bouncycastle    = ivy"org.bouncycastle:bcpg-jdk18on:1.72.1"
   def caseApp         = ivy"com.github.alexarchambault::case-app:2.1.0-M19"
-  def coursierPublish = ivy"io.get-coursier.publish::publish:0.1.3"
+  def coursierPublish = ivy"io.get-coursier.publish:publish_2.13:0.1.3"
   def expecty         = ivy"com.eed3si9n.expecty::expecty:0.16.0"
   def jsoniterCore =
     ivy"com.github.plokhotnyuk.jsoniter-scala::jsoniter-scala-core:${Versions.jsoniterScala}"
@@ -32,6 +32,7 @@ object Deps {
 
 object Scala {
   def scala213 = "2.13.8"
+  def scala3   = "3.2.1"
 }
 
 def ghOrg  = "scala-cli"
@@ -51,8 +52,8 @@ trait ScalaCliSigningPublish extends PublishModule {
   def publishVersion = finalPublishVersion()
 }
 
-object shared extends ScalaModule with ScalaCliSigningPublish {
-  def scalaVersion = Scala.scala213
+object shared extends Cross[Shared](Scala.scala213, Scala.scala3)
+class Shared(val crossScalaVersion: String) extends CrossScalaModule with ScalaCliSigningPublish {
   def ivyDeps = super.ivyDeps() ++ Seq(
     Deps.jsoniterCore,
     Deps.osLib
@@ -62,13 +63,14 @@ object shared extends ScalaModule with ScalaCliSigningPublish {
   )
 }
 
-object `cli-options` extends ScalaModule with ScalaCliSigningPublish {
-  def scalaVersion = Scala.scala213
+object `cli-options` extends Cross[CliOptions](Scala.scala213, Scala.scala3)
+class CliOptions(val crossScalaVersion: String) extends CrossScalaModule
+    with ScalaCliSigningPublish {
   def ivyDeps = super.ivyDeps() ++ Seq(
     Deps.caseApp
   )
   def moduleDeps = Seq(
-    shared
+    shared()
   )
 }
 
@@ -97,28 +99,30 @@ trait CliNativeImage extends NativeImage {
   }
 }
 
-object cli extends ScalaModule with ScalaCliSigningPublish { self =>
-  def scalaVersion = Scala.scala213
+object cli extends Cross[Cli](Scala.scala213, Scala.scala3)
+class Cli(val crossScalaVersion: String) extends CrossScalaModule with ScalaCliSigningPublish {
+  self =>
   def ivyDeps = super.ivyDeps() ++ Seq(
     Deps.bouncycastle,
     Deps.caseApp,
     Deps.coursierPublish // we can probably get rid of that one
   )
   def moduleDeps = Seq(
-    `cli-options`
+    `cli-options`()
   )
   def mainClass = Some("scala.cli.signing.ScalaCliSigning")
 }
 object `native-cli` extends ScalaModule with ScalaCliSigningPublish { self =>
-  def scalaVersion = Scala.scala213
+  private def scalaVer = Scala.scala3
+  def scalaVersion     = scalaVer
   def ivyDeps = super.ivyDeps() ++ Seq(
     Deps.svm
   )
   def moduleDeps = Seq(
-    cli
+    cli(scalaVer)
   )
 
-  def mainClass = cli.mainClass()
+  def mainClass = cli(scalaVer).mainClass()
 
   object `base-image` extends CliNativeImage
   object `static-image` extends CliNativeImage {
@@ -163,7 +167,7 @@ trait CliTests extends ScalaModule {
   def testLauncher: T[PathRef]
   def cliKind: T[String]
 
-  def scalaVersion = Scala.scala213
+  def scalaVersion = Scala.scala3
 
   def prefix = "integration-"
   private def updateRef(name: String, ref: PathRef): PathRef = {
@@ -219,14 +223,14 @@ trait CliTests extends ScalaModule {
   }
 }
 
-object integration extends Module {
-  object jvm extends CliTests {
-    def testLauncher = cli.launcher()
-    def cliKind      = "jvm"
+object `jvm-integration` extends Cross[JvmIntegration](Scala.scala213, Scala.scala3)
+class JvmIntegration(val crossScalaVersion: String) extends CliTests {
+  def testLauncher = cli(crossScalaVersion).launcher()
+  def cliKind      = "jvm"
 
-    object test extends Tests
-  }
-
+  object test extends Tests
+}
+object `native-integration` extends Module {
   object native extends CliTests {
     def testLauncher = `native-cli`.`base-image`.nativeImage()
     def cliKind      = "native"

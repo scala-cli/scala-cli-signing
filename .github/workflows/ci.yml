@@ -20,10 +20,10 @@ jobs:
         with:
           jvm: "temurin:17"
       - run: |
-          ./mill -i "integration.jvm.test"
+          ./mill -i "jvm-integration[_].test"
         if: runner.os != 'Windows'
       - run: |
-          @call ./mill.bat -i "integration.jvm.test"
+          @call ./mill.bat -i "jvm-integration[_].test"
         shell: cmd
         if: runner.os == 'Windows'
 
@@ -59,7 +59,7 @@ jobs:
           path: artifacts/
           if-no-files-found: error
           retention-days: 1
-      - run: ./mill -i "integration.native.test"
+      - run: ./mill -i "native-integration.native.test"
         if: github.event_name == 'push'
 
   native-static-tests:
@@ -84,7 +84,7 @@ jobs:
           path: artifacts/
           if-no-files-found: error
           retention-days: 1
-      - run: ./mill -i "integration.static.test"
+      - run: ./mill -i "native-integration.static.test"
         if: github.event_name == 'push'
 
   native-mostly-static-tests:
@@ -109,7 +109,7 @@ jobs:
           path: artifacts/
           if-no-files-found: error
           retention-days: 1
-      - run: ./mill -i "integration.mostly-static.test"
+      - run: ./mill -i "native-integration.mostly-static.test"
         if: github.event_name == 'push'
 
   upload-launchers:
