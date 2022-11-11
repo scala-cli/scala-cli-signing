@@ -63,17 +63,6 @@ class Shared(val crossScalaVersion: String) extends CrossScalaModule with ScalaC
   )
 }
 
-object `cli-options` extends Cross[CliOptions](Scala.scala213, Scala.scala3)
-class CliOptions(val crossScalaVersion: String) extends CrossScalaModule
-    with ScalaCliSigningPublish {
-  def ivyDeps = super.ivyDeps() ++ Seq(
-    Deps.caseApp
-  )
-  def moduleDeps = Seq(
-    shared()
-  )
-}
-
 trait CliNativeImage extends NativeImage {
   def nativeImagePersist      = System.getenv("CI") != null
   def nativeImageGraalVmJvmId = Deps.graalVmId
@@ -108,7 +97,7 @@ class Cli(val crossScalaVersion: String) extends CrossScalaModule with ScalaCliS
     Deps.coursierPublish // we can probably get rid of that one
   )
   def moduleDeps = Seq(
-    `cli-options`()
+    shared()
   )
   def mainClass = Some("scala.cli.signing.ScalaCliSigning")
 }
