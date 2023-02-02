@@ -35,13 +35,13 @@ object Scala {
   def scala3   = "3.2.1"
 }
 
-def ghOrg  = "scala-cli"
+def ghOrg  = "VirtusLab"
 def ghName = "scala-cli-signing"
 trait ScalaCliSigningPublish extends PublishModule {
   import mill.scalalib.publish._
   def pomSettings = PomSettings(
     description = artifactName(),
-    organization = "io.github.alexarchambault.scala-cli.signing",
+    organization = "org.virtuslab.scala-cli",
     url = s"https://github.com/$ghOrg/$ghName",
     licenses = Seq(License.`Apache-2.0`),
     versionControl = VersionControl.github(ghOrg, ghName),
