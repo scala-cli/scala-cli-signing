@@ -25,23 +25,23 @@ object Deps {
   def osLib = ivy"com.lihaoyi::os-lib:0.9.0"
   def svm   = ivy"org.graalvm.nativeimage:svm:$graalVmVersion"
 
-  def graalVmVersion  = "22.2.0"
+  def graalVmVersion  = "22.3.0"
   def graalVmId       = s"graalvm-java17:$graalVmVersion"
   def csDockerVersion = "2.1.0-M5-18-gfebf9838c"
 }
 
 object Scala {
-  def scala213 = "2.13.8"
-  def scala3   = "3.2.1"
+  def scala213 = "2.13.10"
+  def scala3   = "3.2.2"
 }
 
-def ghOrg  = "scala-cli"
+def ghOrg  = "VirtusLab"
 def ghName = "scala-cli-signing"
 trait ScalaCliSigningPublish extends PublishModule {
   import mill.scalalib.publish._
   def pomSettings = PomSettings(
     description = artifactName(),
-    organization = "io.github.alexarchambault.scala-cli.signing",
+    organization = "org.virtuslab.scala-cli-signing",
     url = s"https://github.com/$ghOrg/$ghName",
     licenses = Seq(License.`Apache-2.0`),
     versionControl = VersionControl.github(ghOrg, ghName),
