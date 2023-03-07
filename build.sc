@@ -22,7 +22,7 @@ object Deps {
   def jsoniterMacros =
     ivy"com.github.plokhotnyuk.jsoniter-scala::jsoniter-scala-macros:${Versions.jsoniterScala}"
   def munit = ivy"org.scalameta::munit:0.7.29"
-  def osLib = ivy"com.lihaoyi::os-lib:0.9.0"
+  def osLib = ivy"com.lihaoyi::os-lib:0.9.1"
   def svm   = ivy"org.graalvm.nativeimage:svm:$graalVmVersion"
 
   def graalVmVersion  = "22.3.0"
