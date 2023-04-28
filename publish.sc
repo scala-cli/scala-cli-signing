@@ -86,8 +86,8 @@ def publishSonatype(
     set.head
   }
   val publisher = new scalalib.publish.SonatypePublisher(
-    uri = "https://s01.oss.sonatype.org/service/local",
-    snapshotUri = "https://s01.oss.sonatype.org/content/repositories/snapshots",
+    uri = "https://oss.sonatype.org/service/local",
+    snapshotUri = "https://oss.sonatype.org/content/repositories/snapshots",
     credentials = credentials,
     signed = true,
     // format: off
