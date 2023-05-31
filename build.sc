@@ -1,5 +1,5 @@
 import $ivy.`io.github.alexarchambault.mill::mill-native-image::0.1.24`
-import $ivy.`io.github.alexarchambault.mill::mill-native-image-upload:0.1.20-2`
+import $ivy.`io.github.alexarchambault.mill::mill-native-image-upload:0.1.24`
 
 import $file.publish, publish.{finalPublishVersion, publishSonatype => publishSonatype0}
 
@@ -11,7 +11,7 @@ import java.io.File
 
 object Deps {
   object Versions {
-    def jsoniterScala = "2.20.7"
+    def jsoniterScala = "2.23.1"
   }
   def bouncycastle    = ivy"org.bouncycastle:bcpg-jdk18on:1.73"
   def caseApp         = ivy"com.github.alexarchambault::case-app:2.1.0-M24"
@@ -25,14 +25,14 @@ object Deps {
   def osLib = ivy"com.lihaoyi::os-lib:0.9.1"
   def svm   = ivy"org.graalvm.nativeimage:svm:$graalVmVersion"
 
-  def graalVmVersion  = "22.3.0"
+  def graalVmVersion  = "22.3.1"
   def graalVmId       = s"graalvm-java17:$graalVmVersion"
-  def csDockerVersion = "2.1.0-M5-18-gfebf9838c"
+  def csDockerVersion = "2.1.4"
 }
 
 object Scala {
   def scala213 = "2.13.10"
-  def scala3   = "3.2.2"
+  def scala3   = "3.3.0"
 }
 
 def ghOrg  = "VirtusLab"
@@ -244,10 +244,8 @@ object ci extends Module {
   def upload(directory: String = "artifacts/") = T.command {
     val version = finalPublishVersion()
 
-    val path = os.Path(directory, os.pwd)
-    val launchers = os.list(path).filter(os.isFile(_)).map { path =>
-      path.toNIO -> path.last
-    }
+    val path      = os.Path(directory, os.pwd)
+    val launchers = os.list(path).filter(os.isFile(_)).map(path => path -> path.last)
     val ghToken = Option(System.getenv("UPLOAD_GH_TOKEN")).getOrElse {
       sys.error("UPLOAD_GH_TOKEN not set")
     }
