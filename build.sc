@@ -1,5 +1,5 @@
-import $ivy.`io.github.alexarchambault.mill::mill-native-image::0.1.23`
-import $ivy.`io.github.alexarchambault.mill::mill-native-image-upload:0.1.20-2`
+import $ivy.`io.github.alexarchambault.mill::mill-native-image::0.1.24`
+import $ivy.`io.github.alexarchambault.mill::mill-native-image-upload:0.1.24`
 
 import $file.publish, publish.{finalPublishVersion, publishSonatype => publishSonatype0}
 
@@ -11,37 +11,37 @@ import java.io.File
 
 object Deps {
   object Versions {
-    def jsoniterScala = "2.20.6"
+    def jsoniterScala = "2.23.1"
   }
-  def bouncycastle    = ivy"org.bouncycastle:bcpg-jdk18on:1.72.2"
-  def caseApp         = ivy"com.github.alexarchambault::case-app:2.1.0-M22"
-  def coursierPublish = ivy"io.get-coursier.publish:publish_2.13:0.1.3"
+  def bouncycastle    = ivy"org.bouncycastle:bcpg-jdk18on:1.73"
+  def caseApp         = ivy"com.github.alexarchambault::case-app:2.1.0-M24"
+  def coursierPublish = ivy"io.get-coursier.publish:publish_2.13:0.1.4"
   def expecty         = ivy"com.eed3si9n.expecty::expecty:0.16.0"
   def jsoniterCore =
     ivy"com.github.plokhotnyuk.jsoniter-scala::jsoniter-scala-core:${Versions.jsoniterScala}"
   def jsoniterMacros =
     ivy"com.github.plokhotnyuk.jsoniter-scala::jsoniter-scala-macros:${Versions.jsoniterScala}"
   def munit = ivy"org.scalameta::munit:0.7.29"
-  def osLib = ivy"com.lihaoyi::os-lib:0.9.0"
+  def osLib = ivy"com.lihaoyi::os-lib:0.9.1"
   def svm   = ivy"org.graalvm.nativeimage:svm:$graalVmVersion"
 
-  def graalVmVersion  = "22.2.0"
+  def graalVmVersion  = "22.3.1"
   def graalVmId       = s"graalvm-java17:$graalVmVersion"
-  def csDockerVersion = "2.1.0-M5-18-gfebf9838c"
+  def csDockerVersion = "2.1.4"
 }
 
 object Scala {
-  def scala213 = "2.13.8"
-  def scala3   = "3.2.1"
+  def scala213 = "2.13.10"
+  def scala3   = "3.3.0"
 }
 
-def ghOrg  = "scala-cli"
+def ghOrg  = "VirtusLab"
 def ghName = "scala-cli-signing"
 trait ScalaCliSigningPublish extends PublishModule {
   import mill.scalalib.publish._
   def pomSettings = PomSettings(
     description = artifactName(),
-    organization = "io.github.alexarchambault.scala-cli.signing",
+    organization = "org.virtuslab.scala-cli-signing",
     url = s"https://github.com/$ghOrg/$ghName",
     licenses = Seq(License.`Apache-2.0`),
     versionControl = VersionControl.github(ghOrg, ghName),
@@ -244,10 +244,8 @@ object ci extends Module {
   def upload(directory: String = "artifacts/") = T.command {
     val version = finalPublishVersion()
 
-    val path = os.Path(directory, os.pwd)
-    val launchers = os.list(path).filter(os.isFile(_)).map { path =>
-      path.toNIO -> path.last
-    }
+    val path      = os.Path(directory, os.pwd)
+    val launchers = os.list(path).filter(os.isFile(_)).map(path => path -> path.last)
     val ghToken = Option(System.getenv("UPLOAD_GH_TOKEN")).getOrElse {
       sys.error("UPLOAD_GH_TOKEN not set")
     }
